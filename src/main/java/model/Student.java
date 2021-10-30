@@ -1,6 +1,7 @@
 package model;
 
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * student is an immutable object. it's used for passing around information on students.
@@ -37,6 +38,21 @@ public class Student {
     public Image getPhoto() {
         return photo;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(!(obj instanceof Student)) return false;
+        Student stud = (Student) obj;
+        
+        return name.equals(stud.name) && Objects.equals(studentnumber,stud.studentnumber);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(studentnumber); //Here assuming that uniqueness of student number is already guaranteed
+    }
+
 
 
 }
