@@ -75,7 +75,8 @@ public class CourseTest {
      * @verifies throw illegalargument exception if any of the input parameters is null
      * @see Course#Course(String, String, int)
      */
-    @Test
+    @ParameterizedTest
+    @MethodSource("wrongInputProvider")
     public void Course_shouldThrowIllegalargumentExceptionIfAnyOfTheInputParametersIsNull(String name, String code, int ec) throws Exception {
         // arrange, // act, // assert
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
@@ -95,7 +96,8 @@ public class CourseTest {
      * @verifies throw illegalargument exception if code has invalid format
      * @see Course#Course(String, String, int)
      */
-    @Test
+    @ParameterizedTest
+    @MethodSource("generateCodeWithInvalidSize")
     public void Course_shouldThrowIllegalargumentExceptionIfCodeHasInvalidFormat(String code) {
         // arrange, // act, // assert
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(() -> {
