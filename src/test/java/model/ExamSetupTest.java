@@ -16,6 +16,7 @@ public class ExamSetupTest {
     private static long VALID_DURATION = 5400;
     private static String VALID_COURSE_NAME = "test";
     private static String EXTRA ="-extra-";
+    private static long FUTURE_EXAM_TIME = 1667243070;
     ExamID examId = mock(ExamID.class);
     Course course = mock(Course.class);
 
@@ -28,6 +29,7 @@ public class ExamSetupTest {
 
         //Case examID has a name
         when(examId.getExamName()).thenReturn(VALID_COURSE_NAME);
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(FUTURE_EXAM_TIME);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
         String examName = sut.getExamName();
@@ -59,6 +61,7 @@ public class ExamSetupTest {
 
         //Case examID has a name
         when(examId.getExamName()).thenReturn(VALID_COURSE_NAME);
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(FUTURE_EXAM_TIME);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
         assertThat(sut.getExtraClassCodes().size()).isEqualTo(2);
@@ -102,6 +105,7 @@ public class ExamSetupTest {
 
         //Case examID has a name
         when(examId.getExamName()).thenReturn(VALID_COURSE_NAME);
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(FUTURE_EXAM_TIME);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
         List<String> temp = sut.getExtraClassCodes();
@@ -131,7 +135,7 @@ public class ExamSetupTest {
      */
     @Test
     public void ExamSetup_shouldExamNameCannotBeChangedAfterBeginTime() throws Exception {
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
         String changedName = "changed";
@@ -158,13 +162,13 @@ public class ExamSetupTest {
      */
     @Test
     public void ExamSetup_shouldBeginTimeCantBeHigherThanEndTimeThrowsIllegalDateException() throws Exception {
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
         sut.setEndTime(System.currentTimeMillis());
 
         Assertions.assertThrows(IllegalDateException.class, () -> {
-            sut.setBeginTime(System.currentTimeMillis()+10000);
+            sut.setBeginTime(System.currentTimeMillis()/ 1000L+10000);
         });
     }
 
@@ -174,13 +178,13 @@ public class ExamSetupTest {
      */
     @Test
     public void ExamSetup_shouldEndTimeCantBeLowerThanBeginTimeThrowsIllegalDateException() throws Exception {
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
-        sut.setEndTime(System.currentTimeMillis());
+        sut.setEndTime(System.currentTimeMillis()/ 1000L);
 
         Assertions.assertThrows(IllegalDateException.class, () -> {
-            sut.setEndTime(System.currentTimeMillis()-10000);
+            sut.setEndTime(System.currentTimeMillis()/ 1000L-10000);
         });
 
     }
@@ -191,7 +195,7 @@ public class ExamSetupTest {
      */
     @Test
     public void ExamSetup_shouldEndTimeEqualsBeginTimePlusDuration() throws Exception {
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
         //Method call calculateEndTime()
@@ -205,7 +209,7 @@ public class ExamSetupTest {
      */
     @Test
     public void ExamSetup_shouldExtraMaterialsCannotBeAddedAfterBeginTime() throws Exception {
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
         sut.setExtraMaterials(new File("dummy.txt"));
@@ -220,7 +224,7 @@ public class ExamSetupTest {
      */
     @Test
     public void ExamSetup_shouldShowThatLogicallySimilarCoursesAreEqual() throws Exception {
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
         //SET TIME Manually
         ExamSetup A = new ExamSetup(course,examId,VALID_DURATION);
         ExamSetup B = new ExamSetup(course,examId,VALID_DURATION);
@@ -236,10 +240,10 @@ public class ExamSetupTest {
      */
     @Test
     public void ExamSetup_shouldShowThatLogicallyNotSimilarCoursesAreNotEqual() throws Exception {
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
 
         ExamSetup A = new ExamSetup(course,examId,VALID_DURATION);
-        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()+100000);
+        when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L+100000);
         ExamSetup B = new ExamSetup(course,examId,VALID_DURATION);
 
         assertThat(A).isNotEqualTo(B);

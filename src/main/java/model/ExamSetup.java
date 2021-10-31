@@ -60,10 +60,10 @@ public class ExamSetup {
         this.course = course;
         this.examID = examID;
         this.duration = duration;
-        CreateClassCode();
-        CreateExtraClassCodes();
         CreateBeginTime();
         CalculateEndTime();
+        CreateClassCode();
+        CreateExtraClassCodes();
     }
 
     //GETTERS AND SETTERS
@@ -105,7 +105,7 @@ public class ExamSetup {
     }
 
     public void setExamName(String examName) {
-        if(System.currentTimeMillis()<beginTime)
+        if(System.currentTimeMillis()/ 1000L<beginTime)
         this.setExamName = examName;
     }
 
