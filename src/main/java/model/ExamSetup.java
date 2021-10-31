@@ -144,7 +144,7 @@ public class ExamSetup {
 
     public void setClassCodeAmount(int classCodeAmount) {
         extraClassCodes.clear();
-        if(classCodeAmount<2) this.classCodeAmount =2;
+        if(classCodeAmount<2) this.classCodeAmount = 2;
         else this.classCodeAmount = classCodeAmount;
     }
 
