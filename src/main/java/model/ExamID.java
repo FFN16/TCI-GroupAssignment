@@ -7,6 +7,18 @@ public class ExamID {
     private String examName;
     private long timeOfExamInEpochFormat;
 
-    // TODO: the appropiate methods
+    public ExamID(String examName,long timeOfExamInEpochFormat){
+        this.examName=examName;
+        this.timeOfExamInEpochFormat=timeOfExamInEpochFormat;
+    }
+
+    public String getExamName() {
+        return examName;
+    }
+
+    public long getTimeOfExamInEpochFormat() {
+        return timeOfExamInEpochFormat;
+    }
+
 
 }
