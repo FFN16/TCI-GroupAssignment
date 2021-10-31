@@ -3,6 +3,7 @@ package services.exposed;
 import execution.ExamExecution;
 import model.ExamID;
 import model.ExamSetup;
+import model.Student;
 import model.StudentExam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -250,7 +251,20 @@ public class SimpleTeacherServiceTest {
         SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
         TeacherInterface teachI = server.getTeacherInterface();
 
-        
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+
+        server.signUpForExam(mock(Student.class), examID);
+        server.signUpForExam(mock(Student.class), examID);
+
+        server.startExam(examID);
+        server.stopExam(examID);
+
+        Assertions.assertEquals(teachI.getExamResults(examID).size(), 2);
     }
 
     /**
@@ -262,6 +276,9 @@ public class SimpleTeacherServiceTest {
         SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
         TeacherInterface teachI = server.getTeacherInterface();
 
+        ExamID examID = mock(ExamID.class);
+
+        Assertions.assertThrows(ExamNotFoundException.class, () -> teachI.getExamResults(examID));
     }
 
     /**
@@ -272,6 +289,17 @@ public class SimpleTeacherServiceTest {
     public void getExamResults_throwsExamNotEndedException() throws Exception {
         SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
         TeacherInterface teachI = server.getTeacherInterface();
+
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+
+        server.startExam(examID);
+
+        Assertions.assertThrows(ExamNotEndedException.class, () -> teachI.getExamResults(examID));
 
     }
 
@@ -284,6 +312,17 @@ public class SimpleTeacherServiceTest {
         SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
         TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+
+        server.startExam(examID);
+        server.stopExam(examID);
+
+        Assertions.assertEquals(teachI.finalizeExam(examID), true);
     }
 
     /**
@@ -295,6 +334,9 @@ public class SimpleTeacherServiceTest {
         SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
         TeacherInterface teachI = server.getTeacherInterface();
 
+        ExamID examID = mock(ExamID.class);
+
+        Assertions.assertThrows(ExamNotFoundException.class, () -> teachI.finalizeExam(examID));
     }
 
 }
