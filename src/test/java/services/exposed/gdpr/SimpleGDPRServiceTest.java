@@ -20,7 +20,6 @@ public class SimpleGDPRServiceTest {
     private static Set<ExamID> dummyIdsNotFinalized = new HashSet<>();
     private static ExamID T1 = new ExamID("TEST1",1);
     private static ExamID T2 = new ExamID("TEST2",2);
-    private static ExamID T3 = new ExamID("TEST3",3);
     /**
      * @verifies throw ExamNotFoundException
      * @see SimpleGDPRService#SimpleGDPRService()
@@ -38,7 +37,7 @@ public class SimpleGDPRServiceTest {
         when(efit.getFinalizedExamIDs()).thenReturn(dummyIdsNotFound);
 
         Assertions.assertThrows(ExamNotFoundException.class, () -> {
-            sut.removeStudentExamData(T3);
+            sut.removeStudentExamData(T2);
         });
     }
 
