@@ -11,6 +11,7 @@ import services.exposed.teacher.*;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -77,7 +78,15 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getOpenExams_shouldReturnExams() throws Exception {
-    
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        SimpleTeacherService sts = new SimpleTeacherService();
+        ExamID examID = sts.createExamSetup(name,date);
+        Set<ExamID> examIDS = sts.getOpenExams();
+        Assertions.assertEquals(examIDS.iterator().next(), examID);
     }
 
     /**
@@ -86,7 +95,17 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getOpenExams_shouldReturnBetweenDates() throws Exception {
+        String name = "FinalExam";
+        Date dateFirst = mock(Date.class);
+        Date dateSecond = mock(Date.class);
 
+        when(dateFirst.getTime()).thenReturn(VALID_FIRST_DATE);
+        when(dateSecond.getTime()).thenReturn(VALID_SECOND_DATE);
+
+        SimpleTeacherService sts = new SimpleTeacherService();
+        ExamID examID = sts.createExamSetup(name,dateFirst);
+        Set<ExamID> examIDS = sts.getOpenExams(dateFirst, dateSecond);
+        Assertions.assertEquals(examIDS.iterator().next(), examID);
     }
 
     /**
@@ -95,7 +114,14 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getOpenExams_throwsIllegalArgumentException() throws Exception {
+        Date dateFirst = mock(Date.class);
+        Date dateSecond = mock(Date.class);
 
+        when(dateFirst.getTime()).thenReturn(VALID_FIRST_DATE);
+        when(dateSecond.getTime()).thenReturn(VALID_SECOND_DATE);
+
+        SimpleTeacherService sts = new SimpleTeacherService();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sts.getOpenExams(dateSecond, dateFirst));
     }
 
     /**
@@ -104,7 +130,7 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void addExamMaterial_shouldAddMaterials() throws Exception {
-
+        
     }
 
     /**
