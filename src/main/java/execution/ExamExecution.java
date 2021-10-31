@@ -42,7 +42,7 @@ public class ExamExecution {
 
     // Metadata that must be held
     private String examName;
-    private Date examDate;
+    private Long examDate;
     private int classCodesCount;
     // Map the user count to the class code
     private Map<String, Integer> classCodeUsers;
@@ -53,12 +53,9 @@ public class ExamExecution {
         this.examSetup = examSetup;
         this.studentExams = studentExams;
         this.state = NOTFINALIZED;
-
-        /* Waiting on examSetup model
-        this.examName = examSetup.getName();
-        this.examDate = examSetup.getDate();
-        this.classCodesCount = examSetup.getClassCodes().size();
-         */
+        this.examName = examSetup.getExamName();
+        this.examDate = examSetup.getBeginTime();
+        this.classCodesCount = examSetup.getClassCodeAmount();
     }
 
     public ArrayList<StudentExam> getCopyStudentExams() throws DataCleanedException{
