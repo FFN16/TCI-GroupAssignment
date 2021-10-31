@@ -11,6 +11,8 @@ import java.util.Set;
 public class SimpleTeacherService implements TeacherInterface {
     @Override
     public ExamID createExamSetup(String examname, Date begindate) throws DuplicateExamException {
+        ExamID examID = new ExamID(examname, begindate.getTime());
+
         return null;
     }
 
