@@ -225,7 +225,7 @@ public class ExamSetupTest {
     @Test
     public void ExamSetup_shouldShowThatLogicallySimilarCoursesAreEqual() throws Exception {
         when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
-        //SET TIME Manually
+
         ExamSetup A = new ExamSetup(course,examId,VALID_DURATION);
         ExamSetup B = new ExamSetup(course,examId,VALID_DURATION);
 
