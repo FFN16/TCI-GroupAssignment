@@ -1,9 +1,9 @@
 package model;
 
 import java.io.File;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Random;
 
 //I've slightly modified the commented section below to take care of a couple of naming discrepancies/duplication ie startDate/beginTime: I see it as referring to the same field
@@ -32,7 +32,7 @@ import java.util.Random;
  *
  */
 public class ExamSetup {
-    // TODO: the appropriate methods
+
     private Course course;// If examID has no examName, the name comes from the course
     private ExamID examID;// Contains information on beginTime and examName
     private String classCode;
@@ -46,7 +46,6 @@ public class ExamSetup {
 
     /**@should classCode is examName followed by dash and six random characters
      * @should always create two extra classCodes
-     * @should extra classCode should end in '-extra-'
      * @should examName cannot be changed after beginTime
      * @should beginTime cant be higher than endTime throws IllegalDateException
      * @should endTime cant be lower than beginTime throws IllegalDateException
@@ -57,10 +56,14 @@ public class ExamSetup {
 
     //CONSTRUCTOR
 
-    public ExamSetup(Course course,ExamID examId,long duration){
+    public ExamSetup(Course course,ExamID examID,long duration){
         this.course = course;
-        this.examID = examId;
+        this.examID = examID;
         this.duration = duration;
+        CreateBeginTime();
+        CalculateEndTime();
+        CreateClassCode();
+        CreateExtraClassCodes();
     }
 
     //GETTERS AND SETTERS
@@ -102,6 +105,7 @@ public class ExamSetup {
     }
 
     public void setExamName(String examName) {
+        if(System.currentTimeMillis()/ 1000L<beginTime)
         this.setExamName = examName;
     }
 
@@ -109,8 +113,12 @@ public class ExamSetup {
         return beginTime;
     }
 
-    public void setBeginTime(long beginTime) {
+    public void setBeginTime(long beginTime) throws IllegalDateException  {
+        if(beginTime < System.currentTimeMillis() || beginTime > endTime){
+            throw new IllegalDateException();
+        }else{
         this.beginTime = beginTime;
+        }
     }
 
     public long getDuration() {
@@ -125,8 +133,9 @@ public class ExamSetup {
         return endTime;
     }
 
-    public void setEndTime(long endTime) {
-        this.endTime = endTime;
+    public void setEndTime(long endTime) throws IllegalDateException {
+        if(endTime < beginTime) throw new IllegalDateException();
+        else this.endTime = endTime;
     }
 
     public int getClassCodeAmount() {
@@ -134,26 +143,83 @@ public class ExamSetup {
     }
 
     public void setClassCodeAmount(int classCodeAmount) {
-        this.classCodeAmount = classCodeAmount;
+        extraClassCodes.clear();
+        if(classCodeAmount<2) this.classCodeAmount =2;
+        else this.classCodeAmount = classCodeAmount;
     }
 
-    public List<File> getExtraMaterials() {
-        return extraMaterials;
+    // Don't want to send the actual list
+    public List<File> getExtraMaterials()
+    {
+        List<File> returnList = new ArrayList<>();
+        for (File f : extraMaterials ){
+            returnList.add(f);
+        }
+        return returnList;
     }
 
-    public void setExtraMaterials(List<File> extraMaterials) {
-        this.extraMaterials = extraMaterials;
+    public void setExtraMaterials(File file) {
+        if(System.currentTimeMillis()< beginTime)
+        extraMaterials.add(file);
     }
 
     //METHODS
-    private void CreateClassCodes(){
+    //Single 'main' code
+    public void CreateClassCode(){
+        //Create random string
+        String rs = "-";
+        rs = rs + GetRandomString(6);
         if(!(examID.getExamName()==null||examID.getExamName().length()==0)){
             //If examID has a name, use that one
-
-            //Create random string
-            byte[] array = new byte[4];
-            new Random().nextBytes(array);
-            String randString = new String(array, Charset.forName("UTF-8"));
+            setExamName(examID.getExamName()+rs);
+        }else{
+            setExamName(course.getName()+rs);
         }
     }
+
+    public void CreateExtraClassCodes(){
+        extraClassCodes = new ArrayList<>();
+        for(int i = 0 ; i < classCodeAmount ; i++){
+            String extra = "-extra-";
+            String rs = GetRandomString(4);
+            extraClassCodes.add(examID.getExamName()+extra+rs);
+        }
+    }
+
+    private void CreateBeginTime() {
+        //Assuming that ExamID will return a valid time
+        beginTime = examID.getTimeOfExamInEpochFormat();
+    }
+
+    public void CalculateEndTime(){
+        endTime = beginTime+duration;
+    }
+
+    protected String GetRandomString(int len) {
+        String validChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        StringBuilder sb = new StringBuilder();
+        Random rnd = new Random();
+        while (sb.length() < len) {
+            int index = (int) (rnd.nextFloat() * validChars.length());
+            sb.append(validChars.charAt(index));
+        }
+        String rs = sb.toString();
+        return rs;
+    }
+
+    //OVERRIDES
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(!(obj instanceof ExamSetup)) return false;
+        ExamSetup exSet = (ExamSetup) obj;
+
+        return course.equals(exSet.course) && Objects.equals(beginTime,exSet.beginTime);
+    }
+
+    @Override
+    public int hashCode() {
+        return course.hashCode() + Objects.hash(beginTime) * 31 ;
+    }
+
 }
