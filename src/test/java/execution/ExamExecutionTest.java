@@ -35,7 +35,7 @@ public class ExamExecutionTest {
      * @see ExamExecution#clean()
      */
     @Test
-    public void ExamExecution_shouldNotClearTillFinalized() throws Exception {
+    public void clean_shouldNotClearTillFinalized() throws Exception {
         var examSetup = mock(ExamSetup.class);
         var studentExams = Arrays.asList(mock(StudentExam.class), mock(StudentExam.class));
 
@@ -49,7 +49,7 @@ public class ExamExecutionTest {
      * @see ExamExecution#clean()
      */
     @Test
-    public void ExamExecution_shouldClearOnceFinalized() throws Exception {
+    public void clean_shouldClearOnceFinalized() throws Exception {
         var examSetup = mock(ExamSetup.class);
         var studentExams = Arrays.asList(mock(StudentExam.class), mock(StudentExam.class));
 
@@ -63,11 +63,28 @@ public class ExamExecutionTest {
     }
 
     /**
+     * @verifies that when clean is run state is set to CLEARED
+     * @see ExamExecution#clean()
+     */
+    @Test
+    public void clean_shouldChangeState() throws Exception {
+        var examSetup = mock(ExamSetup.class);
+        var studentExams = Arrays.asList(mock(StudentExam.class), mock(StudentExam.class));
+
+        ExamExecution examExecution = new ExamExecution(examSetup, studentExams);
+
+        examExecution.setState(ExamExecutionState.FINALIZED);
+        examExecution.clean();
+
+        assertThat(examExecution.getState()).isEqualTo(ExamExecutionState.CLEARED);
+    }
+
+    /**
      * @verifies that getCopyStudentExams returns a copy of StudentExams
      * @see ExamExecution#getCopyStudentExams()
      */
     @Test
-    public void ExamExecution_shouldReturnMatchingCopy() throws Exception {
+    public void getCopyStudentExams_shouldReturnMatchingCopy() throws Exception {
         var examSetup = mock(ExamSetup.class);
         var studentExams = Arrays.asList(mock(StudentExam.class), mock(StudentExam.class));
 

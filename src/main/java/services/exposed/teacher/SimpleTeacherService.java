@@ -3,14 +3,29 @@ package services.exposed.teacher;
 import model.ExamID;
 import model.StudentExam;
 import services.exposed.ExamNotFoundException;
+import services.exposed.client.SimpleEFITClientService;
+import server.SimpleEFITserver;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
 public class SimpleTeacherService implements TeacherInterface {
+
+    private SimpleEFITserver server;
+
+    public SimpleEFITserver getServer() {
+        return server;
+    }
+
+    public void setServer(SimpleEFITserver server) {
+        this.server = server;
+    }
+
     @Override
     public ExamID createExamSetup(String examname, Date begindate) throws DuplicateExamException {
+        ExamID examID = new ExamID(examname, begindate.getTime());
+
         return null;
     }
 
