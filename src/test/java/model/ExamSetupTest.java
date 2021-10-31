@@ -15,6 +15,7 @@ public class ExamSetupTest {
 
     private static long VALID_DURATION = 5400;
     private static String VALID_COURSE_NAME = "Testing and Continuous Integration";
+    private static String EXTRA ="-extra-";
     ExamID examId = mock(ExamID.class);
     Course course = mock(Course.class);
     /**
@@ -30,8 +31,8 @@ public class ExamSetupTest {
         when(examId.getExamName()).thenReturn(VALID_COURSE_NAME);
         String examName = sut.getExamName();
         char[] ch = examName.toCharArray();
-        assertThat(examName.length()== VALID_COURSE_NAME.length()+7);
-        assertThat(ch[examName.length()-6]=='-');
+        assertThat(examName.length()).isEqualTo(VALID_COURSE_NAME.length()+7);
+        assertThat(ch[examName.length()-6]).isEqualTo('-');
 
         //Case examID has no name
         when(examId.getExamName()).thenReturn(null);
@@ -41,7 +42,7 @@ public class ExamSetupTest {
         ch = examName.toCharArray();
 
         assertThat(examName.length()== VALID_COURSE_NAME.length()+7);
-        assertThat(ch[examName.length()-6]=='-');
+        assertThat(ch[examName.length()-6]).isEqualTo('-');
 
     }
 
@@ -56,7 +57,8 @@ public class ExamSetupTest {
         //Case examID has a name
         when(examId.getExamName()).thenReturn(VALID_COURSE_NAME);
         //Method call
-        assertThat(sut.getExtraClassCodes().size() == 2);
+        System.out.println(sut.getExtraClassCodes().size());
+        assertThat(sut.getExtraClassCodes().size()).isEqualTo(2);
 
         //Case examID has no name
         sut = new ExamSetup(course,examId,VALID_DURATION);
@@ -64,7 +66,7 @@ public class ExamSetupTest {
         when(examId.getExamName()).thenReturn(null);
         when(course.getName()).thenReturn(VALID_COURSE_NAME);
         //Method call
-        assertThat(sut.getExtraClassCodes().size() == 2);
+        assertThat(sut.getExtraClassCodes().size()).isEqualTo(2);
 
     }
 
@@ -73,6 +75,7 @@ public class ExamSetupTest {
      * @see ExamSetup#ExamSetup(Course,ExamID, long)
      */
     @Test
+    //REDO THIS ONE
     public void ExamSetup_shouldExtraClassCodeShouldEndInExtra() throws Exception {
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
 
@@ -80,15 +83,14 @@ public class ExamSetupTest {
 
         when(examId.getExamName()).thenReturn(VALID_COURSE_NAME);
         //Method call
+        String temp = "";
         for(int i = 0; i < sut.getExtraClassCodes().size() ; i++){
             String  examName = sut.getExtraClassCodes().get(i);
             char[] ch = examName.toCharArray();
-            String temp = "";
             for(int j = 0; j < 7; j++){
                 temp += ch[VALID_COURSE_NAME.length()+j];
             }
-
-            assertThat(temp == "-extra-");
+            assertThat(temp).isEqualTo(EXTRA);
         }
 
         //Case examID has no name
@@ -98,15 +100,15 @@ public class ExamSetupTest {
         when(course.getName()).thenReturn(VALID_COURSE_NAME);
 
         //method call
+        temp = "";
         for(int i = 0; i < sut.getExtraClassCodes().size() ; i++){
             String  examName = sut.getExtraClassCodes().get(i);
             char[] ch = examName.toCharArray();
-            String temp = "";
             for(int j = 0; j < 7; j++){
                 temp += ch[VALID_COURSE_NAME.length()+j];
             }
 
-            assertThat(temp == "-extra-");
+            assertThat(temp).isEqualTo("-extra-");
         }
     }
 
@@ -125,7 +127,7 @@ public class ExamSetupTest {
         when(examId.getExamName()).thenReturn(VALID_COURSE_NAME);
 
         sut.setExamName("ChangedName");
-        assertThat(sut.getExamName()!="ChangedName");
+        assertThat(sut.getExamName()).isNotEqualTo("ChangedName");
         //Case examID has no name
         sut = new ExamSetup(course,examId,VALID_DURATION);
 
@@ -133,7 +135,7 @@ public class ExamSetupTest {
         when(course.getName()).thenReturn(VALID_COURSE_NAME);
 
         sut.setExamName("ChangedName");
-        assertThat(sut.getExamName()!="ChangedName");
+        assertThat(sut.getExamName()).isNotEqualTo("ChangedName");
 
     }
 
@@ -167,7 +169,7 @@ public class ExamSetupTest {
         Assertions.assertThrows(IllegalDateException.class, () -> {
             sut.setEndTime(System.currentTimeMillis()-10000);
         });
-        Assertions.fail("Not yet implemented");
+
     }
 
     /**
@@ -181,7 +183,7 @@ public class ExamSetupTest {
 
         //Method call calculateEndTime()
 
-        assertThat(sut.getEndTime()==sut.getBeginTime()+sut.getDuration());
+        assertThat(sut.getEndTime()).isEqualTo(sut.getBeginTime()+sut.getDuration());
     }
 
     /**
@@ -195,7 +197,7 @@ public class ExamSetupTest {
 
         sut.getExtraMaterials().add(new File("dummy.txt"));
 
-        assertThat(sut.getExtraMaterials().size()==0);
+        assertThat(sut.getExtraMaterials().size()).isEqualTo(0);
 
     }
 
@@ -206,7 +208,7 @@ public class ExamSetupTest {
     @Test
     public void ExamSetup_shouldShowThatLogicallySimilarCoursesAreEqual() throws Exception {
         when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis());
-
+        //SET TIME Manually
         ExamSetup A = new ExamSetup(course,examId,VALID_DURATION);
         ExamSetup B = new ExamSetup(course,examId,VALID_DURATION);
 

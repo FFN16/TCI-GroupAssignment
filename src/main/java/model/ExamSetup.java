@@ -1,8 +1,10 @@
 package model;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 //I've slightly modified the commented section below to take care of a couple of naming discrepancies/duplication ie startDate/beginTime: I see it as referring to the same field
 /**
@@ -144,5 +146,14 @@ public class ExamSetup {
     }
 
     //METHODS
+    private void CreateClassCodes(){
+        if(!(examID.getExamName()==null||examID.getExamName().length()==0)){
+            //If examID has a name, use that one
 
+            //Create random string
+            byte[] array = new byte[4];
+            new Random().nextBytes(array);
+            String randString = new String(array, Charset.forName("UTF-8"));
+        }
+    }
 }
