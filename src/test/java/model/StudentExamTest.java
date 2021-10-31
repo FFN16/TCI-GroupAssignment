@@ -71,10 +71,11 @@ public class StudentExamTest {
         // Arrange
         var student = mock(Student.class);
         var examID = mock(ExamID.class);
+        var examID2 = mock(ExamID.class);
 
         // Act
         StudentExam studentExamA = new StudentExam(student, examID, VALID_CLASS_CODE);
-        StudentExam studentExamB = new StudentExam(student, examID, "FinalExam-agHRtX");
+        StudentExam studentExamB = new StudentExam(student, examID2, VALID_CLASS_CODE);
 
         // Assert
         assertThat(studentExamA).isNotEqualTo(studentExamB);
