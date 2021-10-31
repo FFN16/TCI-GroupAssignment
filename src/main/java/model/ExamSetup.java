@@ -1,5 +1,7 @@
 package model;
 
+import exceptions.IllegalDateException;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -113,7 +115,7 @@ public class ExamSetup {
         return beginTime;
     }
 
-    public void setBeginTime(long beginTime) throws IllegalDateException  {
+    public void setBeginTime(long beginTime) throws IllegalDateException {
         if(beginTime < System.currentTimeMillis() || beginTime > endTime){
             throw new IllegalDateException();
         }else{

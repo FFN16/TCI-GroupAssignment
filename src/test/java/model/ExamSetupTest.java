@@ -1,5 +1,6 @@
 package model;
 
+import exceptions.IllegalDateException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
