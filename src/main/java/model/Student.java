@@ -14,7 +14,6 @@ public class Student {
     private Image photo;
 
     /**
-    * @should only sign up before exam starts
     * @should show that logically similar students are equal
     * @should show that logically not-similar students are not equal
     */
@@ -52,7 +51,5 @@ public class Student {
     public int hashCode() {
         return Objects.hash(studentnumber); //Here assuming that uniqueness of student number is already guaranteed
     }
-
-
 
 }
