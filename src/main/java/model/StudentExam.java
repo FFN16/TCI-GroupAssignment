@@ -39,6 +39,14 @@ public class StudentExam {
         this.screenshots.add(image);
     }
 
+    public void runProcess(){
+
+    }
+
+    public void propertiesEFIT(){
+
+    }
+
     // Hash & isEqual
 
     @Override
