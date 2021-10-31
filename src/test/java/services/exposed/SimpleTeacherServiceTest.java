@@ -6,6 +6,7 @@ import model.ExamSetup;
 import model.StudentExam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import server.SimpleEFITserver;
 import services.exposed.teacher.*;
 
 import java.util.Arrays;
@@ -17,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 public class SimpleTeacherServiceTest {
 
+    private static final long INVALID_DATE = System.currentTimeMillis() - 1_000_000L;
     private static final long VALID_FIRST_DATE = System.currentTimeMillis() + 1_000_000L;
     private static final long VALID_SECOND_DATE = System.currentTimeMillis() + 4_000_000L;
 
@@ -43,7 +45,14 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void createExamSetup_throwsDuplicateExam() throws Exception {
+        String name = "FinalExam";
+        Date date = mock(Date.class);
 
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        SimpleTeacherService sts = new SimpleTeacherService();
+        ExamID examID = sts.createExamSetup(name,date);
+        Assertions.assertThrows(DuplicateExamException.class, () -> sts.createExamSetup(name, date));
     }
 
     /**
@@ -52,7 +61,14 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void createExamSetup_throwsIllegalArgumentException() throws Exception {
+        String name = "FinalExam";
+        Date date = mock(Date.class);
 
+        // Using a date before current so that its incorrect
+        when(date.getTime()).thenReturn(INVALID_DATE);
+
+        SimpleTeacherService sts = new SimpleTeacherService();
+        Assertions.assertThrows(IllegalArgumentException.class, () -> sts.createExamSetup(name, date));
     }
 
     /**
@@ -61,7 +77,7 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getOpenExams_shouldReturnExams() throws Exception {
-
+    
     }
 
     /**
