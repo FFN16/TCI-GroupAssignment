@@ -8,8 +8,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class StudentExamTest {
 
@@ -83,7 +82,7 @@ public class StudentExamTest {
     }
 
     /**
-     * @verifies show that logically not-similar courses are not equal
+     * @verifies add a screenshot to the ArrayList screenshots
      * @see StudentExam#addScreenshot(Image)
      */
     @Test
@@ -99,4 +98,28 @@ public class StudentExamTest {
         Assertions.assertEquals(1, studentExam.getScreenshots().size());
     }
 
+    /**
+     * @verifies that the method was called
+     * @see StudentExam#runProcess()
+     */
+    @Test
+    public void StudentExam_shouldInvokeRunProcessMethod() throws Exception {
+        StudentExam studentExam = mock(StudentExam.class);
+        studentExam.runProcess();
+
+        verify(studentExam, times(1)).runProcess();
+    }
+
+
+    /**
+     * @verifies that the method was called
+     * @see StudentExam#propertiesEFIT()
+     */
+    @Test
+    public void StudentExam_shouldInvokePropertiesEFITMethod() throws Exception {
+        StudentExam studentExam = mock(StudentExam.class);
+        studentExam.propertiesEFIT();
+
+        verify(studentExam, times(1)).propertiesEFIT();
+    }
 }
