@@ -26,7 +26,15 @@ public class SimpleGDPRService implements GDPRInterface {
 
     @Override
     public void removeStudentExamData(ExamID examID) throws ExamNotFoundException, ExamNotFinalizedException {
-
+        if(!(getServer().getFinalizedExamIDs().contains(examID))){
+            if(getServer().getInProgressOrUnfinalizedExamIDs().contains(examID)){
+                throw new ExamNotFinalizedException();
+            }else{
+                throw new ExamNotFoundException();
+            }
+        }else{
+            getServer().removeStudentExamData(examID);
+        }
     }
 
 
