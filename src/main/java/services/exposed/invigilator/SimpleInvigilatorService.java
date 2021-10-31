@@ -1,10 +1,23 @@
 package services.exposed.invigilator;
 
 import model.Student;
+import server.SimpleEFITserver;
+import services.exposed.client.SimpleEFITClientService;
 
 import java.util.Set;
 
 public class SimpleInvigilatorService implements InvigilatorInterface {
+
+    private SimpleEFITserver server;
+
+    public SimpleEFITserver getServer() {
+        return server;
+    }
+
+    public void setServer(SimpleEFITserver server) {
+        this.server = server;
+    }
+
     @Override
     public Set<Student> getListOfEnteredStudents() {
         return null;

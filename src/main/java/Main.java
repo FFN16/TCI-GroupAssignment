@@ -1,3 +1,4 @@
+import server.EFITserver;
 import services.exposed.client.EFITClientInterface;
 import services.exposed.client.SimpleEFITClientService;
 import services.exposed.gdpr.GDPRInterface;

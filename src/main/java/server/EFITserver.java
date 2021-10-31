@@ -1,3 +1,5 @@
+package server;
+
 import execution.ExamExecution;
 import services.exposed.client.EFITClientInterface;
 import services.exposed.gdpr.GDPRInterface;
@@ -11,7 +13,7 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * the EFITserver class holds all information on exams, registered students for exams, exam results and logging
+ * the server.EFITserver class holds all information on exams, registered students for exams, exam results and logging
  *
  */
 public abstract class EFITserver implements ExamProcessInterface {

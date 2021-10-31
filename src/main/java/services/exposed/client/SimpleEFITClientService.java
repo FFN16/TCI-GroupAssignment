@@ -3,6 +3,7 @@ package services.exposed.client;
 import model.ExamID;
 import model.ExamToken;
 import model.Student;
+import server.SimpleEFITserver;
 import services.exposed.ExamNotFoundException;
 import services.exposed.client.EFITClientInterface;
 import services.exposed.invigilator.Alert;
@@ -13,6 +14,17 @@ import java.util.List;
 import java.util.Set;
 
 public class SimpleEFITClientService implements EFITClientInterface {
+
+    private SimpleEFITserver server;
+
+    public SimpleEFITserver getServer() {
+        return server;
+    }
+
+    public void setServer(SimpleEFITserver server) {
+        this.server = server;
+    }
+
     @Override
     public void signUpForExam(Student student, String examName, Long examDateAsEpochTime) throws IllegalArgumentException, SignupNotAllowedException, ExamNotFoundException, ExamAmountException {
 
