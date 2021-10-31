@@ -1,5 +1,6 @@
 package model;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.awt.*;
@@ -16,7 +17,7 @@ public class StudentExamTest {
 
     /**
      * @verifies create StudentExam with valid parameters
-     * @see StudentExam#StudenExam(Student, ExamID, String)
+     * @see StudentExam#StudentExam(Student, ExamID, String)
      */
     @Test
     public void StudentExam_shouldCreateStudentExamWithValidParameters() throws Exception {
@@ -32,9 +33,9 @@ public class StudentExamTest {
 
         // Assert
         assertThat(studentExam.getStudent()).isEqualTo(student);
-        assertThat(studentExam.getExamId()).isEqualTo(examID);
+        assertThat(studentExam.getExamID()).isEqualTo(examID);
         assertThat(studentExam.getClassCode()).isEqualTo(VALID_CLASS_CODE);
-        assertThat(studentExam.getScreenCaptures()).isEqualTo(screenshots);
+        assertThat(studentExam.getScreenshots()).isEqualTo(screenshots);
         assertThat(studentExam.getLogging()).isEqualTo(logging);
         assertThat(studentExam.getHandin()).isEqualTo(handin);
 
@@ -42,7 +43,7 @@ public class StudentExamTest {
 
     /**
      * @verifies show that logically similar courses are equal
-     * @see StudentExam#StudenExam(Student, ExamID, String)
+     * @see StudentExam#StudentExam(Student, ExamID, String)
      */
     @Test
     public void StudentExam_shouldShowThatLogicallySimilarStudentExamsAreEqual() throws Exception {
@@ -55,15 +56,15 @@ public class StudentExamTest {
         StudentExam studentExamB = new StudentExam(student, examID, VALID_CLASS_CODE);
 
         // Assert
-        assertThat(A).isEqualTo(B);
-        assertThat(A).hasSameHashCodeAs(B);
+        assertThat(studentExamA).isEqualTo(studentExamB);
+        assertThat(studentExamA).hasSameHashCodeAs(studentExamB);
     }
 
 
 
     /**
      * @verifies show that logically not-similar courses are not equal
-     * @see StudentExam#StudenExam(Student, ExamID, String)
+     * @see StudentExam#StudentExam(Student, ExamID, String)
      */
     @Test
     public void StudentExam_shouldShowThatLogicallyNotsimilarStudentExamsAreNotEqual() throws Exception {
@@ -76,7 +77,7 @@ public class StudentExamTest {
         StudentExam studentExamB = new StudentExam(student, examID, "FinalExam-agHRtX");
 
         // Assert
-        assertThat(A).isNotEqualTo(B);
+        assertThat(studentExamA).isNotEqualTo(studentExamB);
 
     }
 
@@ -93,8 +94,8 @@ public class StudentExamTest {
         StudentExam studentExam = new StudentExam(student, examID, VALID_CLASS_CODE);
 
         studentExam.addScreenshot(image);
-        assertThat(studentExam.getScrenshots().size()) == 1;
 
+        Assertions.assertEquals(1, studentExam.getScreenshots().size());
     }
 
 }
