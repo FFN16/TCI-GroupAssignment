@@ -9,4 +9,5 @@ package model;
  */
 public class StudentExam {
     // TODO: the appropiate methods
+
 }
