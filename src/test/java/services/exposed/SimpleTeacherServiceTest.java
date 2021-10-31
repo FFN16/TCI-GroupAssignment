@@ -4,6 +4,7 @@ import execution.ExamExecution;
 import model.ExamID;
 import model.ExamSetup;
 import model.StudentExam;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import services.exposed.teacher.*;
 
@@ -12,8 +13,12 @@ import java.util.Date;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SimpleTeacherServiceTest {
+
+    private static final long VALID_FIRST_DATE = System.currentTimeMillis() + 1_000_000L;
+    private static final long VALID_SECOND_DATE = System.currentTimeMillis() + 4_000_000L;
 
     /**
      * @verifies create a valid exam and return the ExamID
@@ -21,7 +26,15 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void createExamSetup_shouldCreateValidExam() throws Exception {
+        String name = "FinalExam";
+        Date date = mock(Date.class);
 
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        SimpleTeacherService sts = new SimpleTeacherService();
+        ExamID examID = sts.createExamSetup(name,date);
+        Assertions.assertEquals(examID.getExamName(), name);
+        Assertions.assertEquals(examID.getTimeOfExamInEpochFormat(), VALID_FIRST_DATE);
     }
 
     /**
