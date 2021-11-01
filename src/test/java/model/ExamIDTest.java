@@ -27,12 +27,8 @@ public class ExamIDTest {
     @Test
     public void ExamID_shouldLogicallyDifferentObjectsMustBeDifferent() throws Exception {
 
-        ExamID A = new ExamID(VALID_TEST_NAME,100000);
-        ExamID B = new ExamID(VALID_TEST_NAME,10000);
-        assertThat(A).isNotEqualTo(B);
-
-        A = new ExamID("ANDR1",100000);
-        B = new ExamID(VALID_TEST_NAME,100000);
+        ExamID A = new ExamID("ANDR1",100000);
+        ExamID B = new ExamID(VALID_TEST_NAME,100000);
         assertThat(A).isNotEqualTo(B);
 
     }
