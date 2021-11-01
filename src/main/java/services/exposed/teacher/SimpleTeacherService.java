@@ -1,14 +1,15 @@
 package services.exposed.teacher;
 
+import model.Course;
 import model.ExamID;
+import model.ExamSetup;
 import model.StudentExam;
 import services.exposed.ExamNotFoundException;
 import services.exposed.client.SimpleEFITClientService;
 import server.SimpleEFITserver;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Stream;
 
 public class SimpleTeacherService implements TeacherInterface {
 
@@ -23,10 +24,23 @@ public class SimpleTeacherService implements TeacherInterface {
     }
 
     @Override
-    public ExamID createExamSetup(String examname, Date begindate) throws DuplicateExamException {
+    public ExamID createExamSetup(String examname, Date begindate) throws DuplicateExamException, IllegalArgumentException {
+        long time = System.currentTimeMillis();
+        if(time > begindate.getTime()){
+            throw new IllegalArgumentException();
+        }
         ExamID examID = new ExamID(examname, begindate.getTime());
 
-        return null;
+        System.out.println(getServer().getSetupExams());
+        if(getServer().getSetupExams().stream().anyMatch(x -> x.getExamID().equals(examID))){
+            throw new DuplicateExamException();
+        }
+
+
+        Course course = new Course("Testing and Continuous Integration", "TCI", 3);
+        ExamSetup examSetup = new ExamSetup(course, examID, 60 * 60 * 1000);
+        getServer().getSetupExams().add(examSetup);
+        return examID;
     }
 
     @Override
@@ -35,7 +49,7 @@ public class SimpleTeacherService implements TeacherInterface {
     }
 
     @Override
-    public Set<ExamID> getOpenExams(Date dateOnOrAfter, Date dateOnOrBefore) {
+    public Set<ExamID> getOpenExams(Date dateOnOrAfter, Date dateOnOrBefore) throws IllegalArgumentException {
         return null;
     }
 

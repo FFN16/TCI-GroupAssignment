@@ -1,6 +1,7 @@
 package server;
 
 import model.ExamID;
+import model.ExamSetup;
 import model.Student;
 import model.StudentExam;
 import services.exposed.ExamNotFoundException;
@@ -21,6 +22,7 @@ import services.internal.UserRole;
 
 import java.util.Date;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SimpleEFITserver extends EFITserver {
 
@@ -68,7 +70,7 @@ public class SimpleEFITserver extends EFITserver {
 
     @Override
     public Set<ExamID> getSetupExamIDs() {
-        return null;
+        return getSetupExams().stream().map(ExamSetup::getExamID).collect(Collectors.toSet());
     }
 
     @Override

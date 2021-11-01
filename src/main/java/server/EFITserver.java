@@ -9,6 +9,7 @@ import model.ExamSetup;
 import model.Student;
 import services.internal.ExamProcessInterface;
 
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -44,6 +45,7 @@ public abstract class EFITserver implements ExamProcessInterface {
         this.teacherInterface = teacherInterface;
         this.invigilatorInterface = invigilatorInterface;
         this.gdprInterface = gdprInterface;
+        this.setupExams = new HashSet<>();
     }
 
     public EFITClientInterface getEfitClientInterface() {
@@ -60,5 +62,9 @@ public abstract class EFITserver implements ExamProcessInterface {
 
     public GDPRInterface getGdprInterface() {
         return gdprInterface;
+    }
+
+    public Set<ExamSetup> getSetupExams() {
+        return setupExams;
     }
 }
