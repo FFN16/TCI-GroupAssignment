@@ -3,13 +3,16 @@ package services.exposed;
 import execution.ExamExecution;
 import model.ExamID;
 import model.ExamSetup;
+import model.Student;
 import model.StudentExam;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import server.SimpleEFITserver;
 import services.exposed.teacher.*;
 
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -17,6 +20,7 @@ import static org.mockito.Mockito.when;
 
 public class SimpleTeacherServiceTest {
 
+    private static final long INVALID_DATE = System.currentTimeMillis() - 1_000_000L;
     private static final long VALID_FIRST_DATE = System.currentTimeMillis() + 1_000_000L;
     private static final long VALID_SECOND_DATE = System.currentTimeMillis() + 4_000_000L;
 
@@ -26,13 +30,15 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void createExamSetup_shouldCreateValidExam() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
+
         String name = "FinalExam";
         Date date = mock(Date.class);
 
         when(date.getTime()).thenReturn(VALID_FIRST_DATE);
 
-        SimpleTeacherService sts = new SimpleTeacherService();
-        ExamID examID = sts.createExamSetup(name,date);
+        ExamID examID = teachI.createExamSetup(name,date);
         Assertions.assertEquals(examID.getExamName(), name);
         Assertions.assertEquals(examID.getTimeOfExamInEpochFormat(), VALID_FIRST_DATE);
     }
@@ -43,7 +49,16 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void createExamSetup_throwsDuplicateExam() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+        Assertions.assertThrows(DuplicateExamException.class, () -> teachI.createExamSetup(name, date));
     }
 
     /**
@@ -52,7 +67,16 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void createExamSetup_throwsIllegalArgumentException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        // Using a date before current so that its incorrect
+        when(date.getTime()).thenReturn(INVALID_DATE);
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> teachI.createExamSetup(name, date));
     }
 
     /**
@@ -61,7 +85,17 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getOpenExams_shouldReturnExams() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+        Set<ExamID> examIDS = teachI.getOpenExams();
+        Assertions.assertEquals(examIDS.iterator().next(), examID);
     }
 
     /**
@@ -70,7 +104,19 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getOpenExams_shouldReturnBetweenDates() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date dateFirst = mock(Date.class);
+        Date dateSecond = mock(Date.class);
+
+        when(dateFirst.getTime()).thenReturn(VALID_FIRST_DATE);
+        when(dateSecond.getTime()).thenReturn(VALID_SECOND_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,dateFirst);
+        Set<ExamID> examIDS = teachI.getOpenExams(dateFirst, dateSecond);
+        Assertions.assertEquals(examIDS.iterator().next(), examID);
     }
 
     /**
@@ -79,7 +125,16 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getOpenExams_throwsIllegalArgumentException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        Date dateFirst = mock(Date.class);
+        Date dateSecond = mock(Date.class);
+
+        when(dateFirst.getTime()).thenReturn(VALID_FIRST_DATE);
+        when(dateSecond.getTime()).thenReturn(VALID_SECOND_DATE);
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> teachI.getOpenExams(dateSecond, dateFirst));
     }
 
     /**
@@ -88,7 +143,17 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void addExamMaterial_shouldAddMaterials() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+        teachI.addExamMaterial(examID, "TestObject");
+        Assertions.assertEquals(teachI.getExamMaterials(examID).get(0), "TestObject");
     }
 
     /**
@@ -97,7 +162,12 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void addExamMaterial_throwsExamNotFound() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        ExamID examID = mock(ExamID.class);
+
+        Assertions.assertThrows(ExamNotFoundException.class, () -> teachI.addExamMaterial(examID, "TestObject"));
     }
 
     /**
@@ -106,25 +176,17 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void addExamMaterial_throwsExamStartedException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
-    }
+        String name = "FinalExam";
+        Date date = mock(Date.class);
 
-    /**
-     * @verifies returns exam materials for valid ExamID
-     * @see SimpleTeacherService#getExamMaterials(ExamID)
-     */
-    @Test
-    public void getExamMaterials_shouldReturnValidExamMaterials() throws Exception {
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
 
-    }
-
-    /**
-     * @verifies throws ExamNotFoundException when invalid ExamID supplied
-     * @see SimpleTeacherService#getExamMaterials(ExamID)
-     */
-    @Test
-    public void getExamMaterials_throwsExamNotFoundException() throws Exception {
-
+        ExamID examID = teachI.createExamSetup(name,date);
+        server.startExam(examID);
+        Assertions.assertThrows(ExamStartedException.class, () -> teachI.addExamMaterial(examID, "TestObject"));
     }
 
     /**
@@ -133,7 +195,17 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void removeExamMaterial_returnSuccessAfterRemoval() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+        teachI.addExamMaterial(examID, "TestObject");
+        Assertions.assertEquals(teachI.removeExamMaterial(examID, "TestObject"), true);
     }
 
     /**
@@ -142,7 +214,12 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void removeExamMaterial_throwsExamNotFoundException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        ExamID examID = mock(ExamID.class);
+
+        Assertions.assertThrows(ExamNotFoundException.class, () -> teachI.removeExamMaterial(examID, "TestObject"));
     }
 
     /**
@@ -151,7 +228,18 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void removeExamMaterial_throwsExamStartedException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+        server.startExam(examID);
+
+        Assertions.assertThrows(ExamStartedException.class, () -> teachI.removeExamMaterial(examID, "TestObject"));
     }
 
     /**
@@ -160,7 +248,23 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getExamResults_shouldReturnExamResults() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+
+        server.signUpForExam(mock(Student.class), examID);
+        server.signUpForExam(mock(Student.class), examID);
+
+        server.startExam(examID);
+        server.stopExam(examID);
+
+        Assertions.assertEquals(teachI.getExamResults(examID).size(), 2);
     }
 
     /**
@@ -169,7 +273,12 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getExamResults_throwsExamNotFoundException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        ExamID examID = mock(ExamID.class);
+
+        Assertions.assertThrows(ExamNotFoundException.class, () -> teachI.getExamResults(examID));
     }
 
     /**
@@ -178,6 +287,19 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void getExamResults_throwsExamNotEndedException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
+
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+
+        server.startExam(examID);
+
+        Assertions.assertThrows(ExamNotEndedException.class, () -> teachI.getExamResults(examID));
 
     }
 
@@ -187,7 +309,20 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void finalizeExam_shouldFinalizeExamAndReturnSuccess() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        String name = "FinalExam";
+        Date date = mock(Date.class);
+
+        when(date.getTime()).thenReturn(VALID_FIRST_DATE);
+
+        ExamID examID = teachI.createExamSetup(name,date);
+
+        server.startExam(examID);
+        server.stopExam(examID);
+
+        Assertions.assertEquals(teachI.finalizeExam(examID), true);
     }
 
     /**
@@ -196,7 +331,12 @@ public class SimpleTeacherServiceTest {
      */
     @Test
     public void finalizeExam_throwsExamNotFoundException() throws Exception {
+        SimpleEFITserver server = SimpleEFITserver.getInstanceTesting();
+        TeacherInterface teachI = server.getTeacherInterface();
 
+        ExamID examID = mock(ExamID.class);
+
+        Assertions.assertThrows(ExamNotFoundException.class, () -> teachI.finalizeExam(examID));
     }
 
 }

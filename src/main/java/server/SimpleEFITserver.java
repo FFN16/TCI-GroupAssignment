@@ -1,8 +1,8 @@
 package server;
 
-import model.ExamID;
-import model.Student;
-import model.StudentExam;
+import exceptions.DataCleanedException;
+import execution.ExamExecution;
+import model.*;
 import services.exposed.ExamNotFoundException;
 import services.exposed.client.EFITClientInterface;
 import services.exposed.client.SimpleEFITClientService;
@@ -20,7 +20,10 @@ import services.internal.InvalidTokenException;
 import services.internal.UserRole;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 public class SimpleEFITserver extends EFITserver {
 
@@ -68,7 +71,7 @@ public class SimpleEFITserver extends EFITserver {
 
     @Override
     public Set<ExamID> getSetupExamIDs() {
-        return null;
+        return getSetupExams().stream().map(ExamSetup::getExamID).collect(Collectors.toSet());
     }
 
     @Override
@@ -90,7 +93,20 @@ public class SimpleEFITserver extends EFITserver {
      */
     @Override
     public ExamID createExamSetup(String examname, Date begindate) throws DuplicateExamException {
-        return null;
+        long time = System.currentTimeMillis();
+        if(time > begindate.getTime()){
+            throw new IllegalArgumentException();
+        }
+        ExamID examID = new ExamID(examname, begindate.getTime());
+
+        if(getSetupExams().stream().anyMatch(x -> x.getExamID().equals(examID))){
+            throw new DuplicateExamException();
+        }
+
+        Course course = new Course("Testing and Continuous Integration", "TCI", 3);
+        ExamSetup examSetup = new ExamSetup(course, examID, 60 * 60 * 1000);
+        getSetupExams().add(examSetup);
+        return examID;
     }
 
     /**
@@ -102,7 +118,13 @@ public class SimpleEFITserver extends EFITserver {
      */
     @Override
     public void signUpForExam(Student student, ExamID examID) throws ExamNotFoundException {
-
+        ExamSetup examSetup = getExamSetupByExamId(examID);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
+        Set<ExamSetup> signedUp = getSignedUpExamsPerStudent().getOrDefault(student, new HashSet<>());
+        signedUp.add(examSetup);
+        getSignedUpExamsPerStudent().put(student, signedUp);
     }
 
     /**
@@ -114,7 +136,19 @@ public class SimpleEFITserver extends EFITserver {
      */
     @Override
     public void startExam(ExamID examID) throws ExamNotFoundException {
+        ExamSetup examSetup = getExamSetupByExamId(examID);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
 
+        List<Student> students = getStudentsForExam(examSetup);
+        List<StudentExam> studentExams = students.stream().map(x -> {
+            String code = examSetup.getClassCode();
+            return new StudentExam(x, examID, code);
+        }).collect(Collectors.toList());
+
+        ExamExecution examExecution = new ExamExecution(examSetup,studentExams);
+        getCurrentlyRunningExams().add(examExecution);
     }
 
     /**
@@ -127,6 +161,14 @@ public class SimpleEFITserver extends EFITserver {
      */
     @Override
     public void stopExam(ExamID examID) throws ExamNotFoundException {
+        ExamSetup examSetup = getExamSetupByExamId(examID);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
+        getSetupExams().remove(examSetup);
+        ExamExecution examExecution = getExamExecutionFromCurrentlyRunning(examSetup);
+        getCurrentlyRunningExams().remove(examExecution);
+        getFinishedExams().add(examExecution);
 
     }
 
@@ -142,7 +184,19 @@ public class SimpleEFITserver extends EFITserver {
      */
     @Override
     public Set<StudentExam> getExamResults(ExamID exam) throws ExamNotFoundException, ExamNotEndedException {
-        return null;
+        ExamSetup examSetup = getExamSetupByExamId(exam);
+        if(examSetup != null){
+            throw new ExamNotEndedException();
+        }
+        ExamExecution examExecution = getExamExecutionFromFinished(exam);
+        if(examExecution == null){
+            throw new ExamNotFoundException();
+        }
+        try {
+            return examExecution.getStudentExams().stream().collect(Collectors.toSet());
+        } catch (DataCleanedException e) {
+            return new HashSet<>();
+        }
     }
 
     /**

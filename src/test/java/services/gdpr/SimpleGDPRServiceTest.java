@@ -1,4 +1,4 @@
-package services.exposed.gdpr;
+package services.gdpr;
 
 import model.ExamID;
 import org.junit.jupiter.api.Assertions;
@@ -6,6 +6,8 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import server.SimpleEFITserver;
 import services.exposed.ExamNotFoundException;
+import services.exposed.gdpr.ExamNotFinalizedException;
+import services.exposed.gdpr.SimpleGDPRService;
 
 import java.util.HashSet;
 import java.util.Set;

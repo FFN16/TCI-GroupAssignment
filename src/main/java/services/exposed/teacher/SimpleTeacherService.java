@@ -1,14 +1,19 @@
 package services.exposed.teacher;
 
+import exceptions.DataCleanedException;
+import execution.ExamExecution;
+import execution.ExamExecutionState;
+import model.Course;
 import model.ExamID;
+import model.ExamSetup;
 import model.StudentExam;
 import services.exposed.ExamNotFoundException;
 import services.exposed.client.SimpleEFITClientService;
 import server.SimpleEFITserver;
 
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class SimpleTeacherService implements TeacherInterface {
 
@@ -23,45 +28,103 @@ public class SimpleTeacherService implements TeacherInterface {
     }
 
     @Override
-    public ExamID createExamSetup(String examname, Date begindate) throws DuplicateExamException {
+    public ExamID createExamSetup(String examname, Date begindate) throws DuplicateExamException, IllegalArgumentException {
+        long time = System.currentTimeMillis();
+        if(time > begindate.getTime()){
+            throw new IllegalArgumentException();
+        }
         ExamID examID = new ExamID(examname, begindate.getTime());
 
-        return null;
+        if(getServer().getSetupExams().stream().anyMatch(x -> x.getExamID().equals(examID))){
+            throw new DuplicateExamException();
+        }
+
+        Course course = new Course("Testing and Continuous Integration", "TCI", 3);
+        ExamSetup examSetup = new ExamSetup(course, examID, 60 * 60 * 1000);
+        getServer().getSetupExams().add(examSetup);
+        return examID;
     }
 
     @Override
     public Set<ExamID> getOpenExams() {
-        return null;
+        return getServer().getSetupExamIDs();
     }
 
     @Override
-    public Set<ExamID> getOpenExams(Date dateOnOrAfter, Date dateOnOrBefore) {
-        return null;
+    public Set<ExamID> getOpenExams(Date dateOnOrAfter, Date dateOnOrBefore) throws IllegalArgumentException {
+        if(dateOnOrAfter.getTime() > dateOnOrBefore.getTime()){
+            throw new IllegalArgumentException();
+        }
+
+        return getServer().getSetupExamIDs().stream().filter(x -> {
+            return dateOnOrAfter.getTime() <= x.getTimeOfExamInEpochFormat() && dateOnOrBefore.getTime() >= x.getTimeOfExamInEpochFormat();
+        }).collect(Collectors.toSet());
     }
 
     @Override
     public void addExamMaterial(ExamID exam, Object examMaterial) throws ExamNotFoundException, ExamStartedException {
-
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
+        if(getServer().isExamRunning(examSetup)){
+            throw new ExamStartedException();
+        }
+        List<Object> materials = examSetup.getExtraMaterials();
+        materials.add(examMaterial);
+        examSetup.setExtraMaterials(materials);
     }
 
     @Override
     public List<Object> getExamMaterials(ExamID exam) {
-        return null;
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        List<Object> materials = examSetup.getExtraMaterials();
+        return materials;
     }
 
     @Override
     public boolean removeExamMaterial(ExamID exam, Object examMaterial) throws ExamNotFoundException, ExamStartedException {
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
+        if(getServer().isExamRunning(examSetup)){
+            throw new ExamStartedException();
+        }
+        List<Object> materials = examSetup.getExtraMaterials();
+        if(materials.contains(examMaterial)){
+            materials.remove(examMaterial);
+            examSetup.setExtraMaterials(materials);
+            return true;
+        }
         return false;
     }
 
     @Override
     public Set<StudentExam> getExamResults(ExamID exam) throws ExamNotFoundException, ExamNotEndedException {
-        return null;
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        if(examSetup != null){
+            throw new ExamNotEndedException();
+        }
+        ExamExecution examExecution = getServer().getExamExecutionFromFinished(exam);
+        if(examExecution == null){
+            throw new ExamNotFoundException();
+        }
+        try {
+            return examExecution.getStudentExams().stream().collect(Collectors.toSet());
+        } catch (DataCleanedException e) {
+            return new HashSet<>();
+        }
+
     }
 
     @Override
     public boolean finalizeExam(ExamID examID) throws ExamNotFoundException {
-        return false;
+        ExamExecution examExecution = getServer().getExamExecutionFromFinished(examID);
+        if(examExecution == null){
+            throw new ExamNotFoundException();
+        }
+        examExecution.setState(ExamExecutionState.FINALIZED);
+        return true;
     }
-    // TODO
 }
