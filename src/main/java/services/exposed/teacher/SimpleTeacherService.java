@@ -9,6 +9,7 @@ import services.exposed.client.SimpleEFITClientService;
 import server.SimpleEFITserver;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class SimpleTeacherService implements TeacherInterface {
@@ -43,12 +44,18 @@ public class SimpleTeacherService implements TeacherInterface {
 
     @Override
     public Set<ExamID> getOpenExams() {
-        return null;
+        return getServer().getSetupExamIDs();
     }
 
     @Override
     public Set<ExamID> getOpenExams(Date dateOnOrAfter, Date dateOnOrBefore) throws IllegalArgumentException {
-        return null;
+        if(dateOnOrAfter.getTime() > dateOnOrBefore.getTime()){
+            throw new IllegalArgumentException();
+        }
+
+        return getServer().getSetupExamIDs().stream().filter(x -> {
+            return dateOnOrAfter.getTime() <= x.getTimeOfExamInEpochFormat() && dateOnOrBefore.getTime() >= x.getTimeOfExamInEpochFormat();
+        }).collect(Collectors.toSet());
     }
 
     @Override
