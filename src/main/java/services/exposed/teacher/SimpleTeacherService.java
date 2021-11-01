@@ -81,6 +81,19 @@ public class SimpleTeacherService implements TeacherInterface {
 
     @Override
     public boolean removeExamMaterial(ExamID exam, Object examMaterial) throws ExamNotFoundException, ExamStartedException {
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
+        if(getServer().isExamRunning(examSetup)){
+            throw new ExamStartedException();
+        }
+        List<Object> materials = examSetup.getExtraMaterials();
+        if(materials.contains(examMaterial)){
+            materials.remove(examMaterial);
+            examSetup.setExtraMaterials(materials);
+            return true;
+        }
         return false;
     }
 
