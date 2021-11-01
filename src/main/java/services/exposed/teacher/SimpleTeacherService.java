@@ -2,6 +2,7 @@ package services.exposed.teacher;
 
 import exceptions.DataCleanedException;
 import execution.ExamExecution;
+import execution.ExamExecutionState;
 import model.Course;
 import model.ExamID;
 import model.ExamSetup;
@@ -119,7 +120,11 @@ public class SimpleTeacherService implements TeacherInterface {
 
     @Override
     public boolean finalizeExam(ExamID examID) throws ExamNotFoundException {
-        return false;
+        ExamExecution examExecution = getServer().getExamExecutionFromFinished(examID);
+        if(examExecution == null){
+            throw new ExamNotFoundException();
+        }
+        examExecution.setState(ExamExecutionState.FINALIZED);
+        return true;
     }
-    // TODO
 }

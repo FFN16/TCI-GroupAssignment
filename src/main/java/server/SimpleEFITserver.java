@@ -1,5 +1,6 @@
 package server;
 
+import exceptions.DataCleanedException;
 import execution.ExamExecution;
 import model.*;
 import services.exposed.ExamNotFoundException;
@@ -183,7 +184,19 @@ public class SimpleEFITserver extends EFITserver {
      */
     @Override
     public Set<StudentExam> getExamResults(ExamID exam) throws ExamNotFoundException, ExamNotEndedException {
-        return null;
+        ExamSetup examSetup = getExamSetupByExamId(exam);
+        if(examSetup != null){
+            throw new ExamNotEndedException();
+        }
+        ExamExecution examExecution = getExamExecutionFromFinished(exam);
+        if(examExecution == null){
+            throw new ExamNotFoundException();
+        }
+        try {
+            return examExecution.getStudentExams().stream().collect(Collectors.toSet());
+        } catch (DataCleanedException e) {
+            return new HashSet<>();
+        }
     }
 
     /**
