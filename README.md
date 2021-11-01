@@ -1,5 +1,6 @@
 # TCI groupassignment EFIT
 
+## Outline
 **EFIT** (Exams For IT) is a tool which is used by FHICT for exams. It enables students to execute ICT exams on their own hardware, while not having communication with others during the exam.
 The tool consists of 2 parts:
 
@@ -9,4 +10,33 @@ The tool consists of 2 parts:
 
 This assignment focusses on a part of the server-side code.
 
+## Details
+We are using github for CI: 
+[Git Repo](https://github.com/FFN16/TCI-GroupAssignment) - please send your git username to us on teams and we will add you
 
+### Running tests
+1. Load the project in Intelij
+2. Open ``src/test``
+3. Richt click on java
+4. Choose ``Run 'All Tests'``
+
+### Dependencies Used
+1. Intelij Plugin: TestCherry
+
+### Test coverage
+Class | Coverage | By
+--- | --- | ---
+Course | 100% | Pre-built
+ExamID | 100% | Filippo
+ExamSetup | 100% | Filippo
+Student | 100% | Filippo
+StudentExam | 100% | Floris
+ExamExecution | 100% | Floris
+SimpleTeacherService | 100% | Floris
+SimpleGDPRService | 100% | Filippo
+
+### Other Implementation
+Class | By
+--- | ---
+EFITserver | Floris
+SimpleEFITserver | Floris
