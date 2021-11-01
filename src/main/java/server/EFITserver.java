@@ -104,5 +104,25 @@ public abstract class EFITserver implements ExamProcessInterface {
         });
     }
 
+    public ExamExecution getExamExecutionFromCurrentlyRunning(ExamSetup examSetup){
+        return getCurrentlyRunningExams().stream().filter(x -> {
+            try {
+                return x.getExamSetup().equals(examSetup);
+            } catch (DataCleanedException e) {
+                return false;
+            }
+        }).findFirst().orElse(null);
+    }
+
+    public ExamExecution getExamExecutionFromFinished(ExamID examID){
+        return getFinishedExams().stream().filter(x -> {
+            try {
+                return x.getExamSetup().getExamID().equals(examID);
+            } catch (DataCleanedException e) {
+                return false;
+            }
+        }).findFirst().orElse(null);
+    }
+
 
 }

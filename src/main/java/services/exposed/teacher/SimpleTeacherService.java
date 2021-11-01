@@ -1,5 +1,7 @@
 package services.exposed.teacher;
 
+import exceptions.DataCleanedException;
+import execution.ExamExecution;
 import model.Course;
 import model.ExamID;
 import model.ExamSetup;
@@ -99,7 +101,20 @@ public class SimpleTeacherService implements TeacherInterface {
 
     @Override
     public Set<StudentExam> getExamResults(ExamID exam) throws ExamNotFoundException, ExamNotEndedException {
-        return null;
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        if(examSetup != null){
+            throw new ExamNotEndedException();
+        }
+        ExamExecution examExecution = getServer().getExamExecutionFromFinished(exam);
+        if(examExecution == null){
+            throw new ExamNotFoundException();
+        }
+        try {
+            return examExecution.getStudentExams().stream().collect(Collectors.toSet());
+        } catch (DataCleanedException e) {
+            return new HashSet<>();
+        }
+
     }
 
     @Override

@@ -146,8 +146,8 @@ public class SimpleEFITserver extends EFITserver {
             return new StudentExam(x, examID, code);
         }).collect(Collectors.toList());
 
-        ExamExecution examExe = new ExamExecution(examSetup,studentExams);
-        getCurrentlyRunningExams().add(examExe);
+        ExamExecution examExecution = new ExamExecution(examSetup,studentExams);
+        getCurrentlyRunningExams().add(examExecution);
     }
 
     /**
@@ -160,6 +160,14 @@ public class SimpleEFITserver extends EFITserver {
      */
     @Override
     public void stopExam(ExamID examID) throws ExamNotFoundException {
+        ExamSetup examSetup = getExamSetupByExamId(examID);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
+        getSetupExams().remove(examSetup);
+        ExamExecution examExecution = getExamExecutionFromCurrentlyRunning(examSetup);
+        getCurrentlyRunningExams().remove(examExecution);
+        getFinishedExams().add(examExecution);
 
     }
 
