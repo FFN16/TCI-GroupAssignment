@@ -28,12 +28,11 @@ public class ExamID {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if(this == obj) return true;
-        if(!(obj instanceof ExamID)) return false;
-        ExamID exID = (ExamID) obj;
-
-        return exID.equals(exID.examName) && Objects.equals(timeOfExamInEpochFormat,exID.timeOfExamInEpochFormat);
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ExamID examID = (ExamID) o;
+        return examName.equals(examID.examName);
     }
 
     @Override
