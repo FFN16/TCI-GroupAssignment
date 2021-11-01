@@ -60,12 +60,23 @@ public class SimpleTeacherService implements TeacherInterface {
 
     @Override
     public void addExamMaterial(ExamID exam, Object examMaterial) throws ExamNotFoundException, ExamStartedException {
-
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        if(examSetup == null){
+            throw new ExamNotFoundException();
+        }
+        if(getServer().isExamRunning(examSetup)){
+            throw new ExamStartedException();
+        }
+        List<Object> materials = examSetup.getExtraMaterials();
+        materials.add(examMaterial);
+        examSetup.setExtraMaterials(materials);
     }
 
     @Override
     public List<Object> getExamMaterials(ExamID exam) {
-        return null;
+        ExamSetup examSetup = getServer().getExamSetupByExamId(exam);
+        List<Object> materials = examSetup.getExtraMaterials();
+        return materials;
     }
 
     @Override
