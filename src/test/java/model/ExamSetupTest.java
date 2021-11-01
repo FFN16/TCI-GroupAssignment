@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -212,8 +213,8 @@ public class ExamSetupTest {
     public void ExamSetup_shouldExtraMaterialsCannotBeAddedAfterBeginTime() throws Exception {
         when(examId.getTimeOfExamInEpochFormat()).thenReturn(System.currentTimeMillis()/ 1000L);
         ExamSetup sut = new ExamSetup(course,examId,VALID_DURATION);
-
-        sut.setExtraMaterials(new File("dummy.txt"));
+        List<Object> objects = new ArrayList<>();
+        sut.setExtraMaterials(objects);
 
         assertThat(sut.getExtraMaterials().size()).isEqualTo(0);
 

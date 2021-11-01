@@ -44,7 +44,7 @@ public class ExamSetup {
     private long beginTime;
     private long duration;
     private long endTime;
-    private List<File> extraMaterials = new ArrayList<>();
+    private List<Object> extraMaterials = new ArrayList<>();
 
     /**@should classCode is examName followed by dash and six random characters
      * @should always create two extra classCodes
@@ -150,19 +150,12 @@ public class ExamSetup {
         else this.classCodeAmount = classCodeAmount;
     }
 
-    // Don't want to send the actual list
-    public List<File> getExtraMaterials()
-    {
-        List<File> returnList = new ArrayList<>();
-        for (File f : extraMaterials ){
-            returnList.add(f);
-        }
-        return returnList;
+    public List<Object> getExtraMaterials() {
+        return extraMaterials;
     }
 
-    public void setExtraMaterials(File file) {
-        if(System.currentTimeMillis()< beginTime)
-        extraMaterials.add(file);
+    public void setExtraMaterials(List<Object> extraMaterials) {
+        this.extraMaterials = extraMaterials;
     }
 
     //METHODS
