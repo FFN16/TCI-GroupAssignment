@@ -31,11 +31,9 @@ public class SimpleTeacherService implements TeacherInterface {
         }
         ExamID examID = new ExamID(examname, begindate.getTime());
 
-        System.out.println(getServer().getSetupExams());
         if(getServer().getSetupExams().stream().anyMatch(x -> x.getExamID().equals(examID))){
             throw new DuplicateExamException();
         }
-
 
         Course course = new Course("Testing and Continuous Integration", "TCI", 3);
         ExamSetup examSetup = new ExamSetup(course, examID, 60 * 60 * 1000);
